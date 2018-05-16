@@ -222,7 +222,7 @@ int main() {
         recibir2(animal);
         fseek(f1, 0, SEEK_END); //Se lleva el puntero del archivo al final
         pos = ftell(f1);
-        int npos = pos / 96;
+        int npos = pos / sizeof(struct dogType);
         sprintf(nomarch, "Historia%d", pos);
     }
     do {
