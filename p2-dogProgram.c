@@ -19,6 +19,7 @@ struct dogType {
     int estatura; //Tomado en cm
     float peso; //Masa en kg
     char sexo[1]; //H/M
+	int del;//indica si el archivo debe ser borrado
 };
 
 int recibirs(void *ap) {
@@ -235,7 +236,7 @@ int main() {
                 recibir(animal);
                 fseek(f1, 0, SEEK_END); //Se lleva el puntero del archivo al final
                 pos = ftell(f1);
-                int npos = pos / 96;
+                int npos = pos / (sizeof(struct dogType));
                 sprintf(nomarch, "Historia%d", pos);
                 if (0 >= (fwrite(animal, sizeof (*animal), 1, f1))) //Escritura en archivo
                     printf("\n   Registro no ingresado  \n");
@@ -252,7 +253,7 @@ int main() {
                 printf("Hay %d registros\n", creg);
                 printf("\n   Ingrese numero de registro a ver:  \n");
                 scanf("%d", &his);
-                i = his * 96;
+                i = his * sizeof(struct dogType);
                 fseek(f1, i, SEEK_SET);
                 aux = fread(animal, sizeof (*animal), 1, f1);
                 if (aux == 0) {
@@ -277,7 +278,7 @@ int main() {
                 printf("Hay %d registros\n", creg);
                 printf("\n   Ingrese numero de registro a borrar:  \n");
                 scanf("%d", &his);
-                i = his * 96;
+                i = his * sizeof(struct dogType);
                 fseek(f1, 0, SEEK_END);
                 int fpos = ftell(f1) - sizeof (*animal);
                 creg = creg - 1;
