@@ -280,54 +280,35 @@ int main() {
                 scanf("%d", &his);
                 i = his * sizeof(struct dogType);
                 fseek(f1, 0, SEEK_END);
-                int fpos = ftell(f1) - sizeof (*animal);
+                int fpos = ftell(f1)
                 creg = creg - 1;
-                if (i = fpos) {//es el ultimo registro
+		if (i < fpos) {
+			fseek(*data,i,SEEK_SET);
+			fread(animal,sizeof(struct dogType),1,f1);
+			animal -> boolean = 0;
+			fseek(f1,i,SEEK_SET);
+			fwrite(animal,sizeof(struct dogType),1,f1);
+			FILE *ftemp;
+			ftemp = fopen("temporal.tmp","wb");
+			rewind(f1);
+			while(fread(animal,sizeof(struct dogType),1,f1))
+				if(animal -> boolean == 1)
+					fwrite(animal,sizeof(struct dogType),1,ftemp);
+			fclose(ftemp);
+			fclose(f1);
 
-                } else {
-                    if (i < fpos) {
-                        fseek(f1, fpos, SEEK_SET);
-                        aux = fread(animal, sizeof (*animal), 1, f1);
-                        if (aux == 0) {
-                            system("clear");
-                            printf("\n %i   Registro vacio\n", aux);
-                            aguante();
-                            system("clear");
-                        } else {
-                            //printf("\n   Registro existente\n");
-                            fseek(f1, i, SEEK_SET);
-                            if (0 >= (fwrite(animal, sizeof (*animal), 1, f1))) //Escritura en archivo
-                                printf("\n   Registro no sobreescrito  \n");
-                            else {
-                                fseek(f1, i, SEEK_SET);
-                                sprintf(nomarch, "Historia%d", fpos);
-                                //printf("\n   Registro ingresado, %i \n");
-                                hash_add(hsh, animal, i, nomarch);
-                            }
-                            aguante();
-                            system("clear");
-                        }
-                    } else {//fuera del documento
+			rename("dataDogs.dat", "dataDogs.old");
+			rename("temporal.tmp", "dataDogs.dat");
+			remove("dataDogs.old");
+			f1 = fopen("dataDogs.dat","r+b");
+			printf("Eliminación Correcta\n");
+                    }
+		else {//fuera del documento
                         printf("\n   Registro no existente\n");
                         creg = creg + 1;
-                        aguante();
-                        system("clear");
                     }
-                }
-
-                aux = fread(animal, sizeof (*animal), 1, f1);
-                if (aux == 0) {
-                    system("clear");
-                    printf("\n %i   Registro vacio\n", aux);
-                    aguante();
-                    system("clear");
-                } else {
-                    printf("\n   Registro existente\n");
-                    imprimir(animal);
-                    aguante();
-                    system("clear");
-                }
-
+		aguante();
+		system("clear");
                 break;
             case 4: //buscar
                 printf("\n  Ingrese el nombre completo a buscar\n");
