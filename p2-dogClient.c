@@ -12,7 +12,7 @@ FILE *fso; //Se crea el apuntador del objeto FILE
 int creg;
 
 struct dogType {
-    char nombre[32];
+	char nombre[32];
     char tipo[32]; //Nombre vulgar del especimen ej.Gato,Perro
     int edad;
     char raza[16];
@@ -41,18 +41,19 @@ int recibir(void *ap) {
         dato->nombre[i] = ' ';
     }
     printf("Nombre: ");
-    scanf("%s", dato->nombre); //Dado que es una arreglo es de por si un apuntador
+    scanf("%31s", dato->nombre); //Dado que es una arreglo es de por si un apuntador
     printf("Tipo: ");
-    scanf("%s", dato->tipo); //Dado que es una arreglo es de por si un apuntador
+    scanf("%31s", dato->tipo); //Dado que es una arreglo es de por si un apuntador
     printf("Edad: ");
     scanf("%i", &dato->edad);
     printf("Raza: ");
-    scanf("%s", dato->raza); //Dado que es una arreglo es de por si un apuntador
+    scanf("%15s", dato->raza); //Dado que es una arreglo es de por si un apuntador
     printf("Estatura(cm): ");
     scanf("%i", &dato->estatura);
     printf("Peso(Kg): ");
     scanf("%f", &dato->peso);
     recibirs(ap);
+	dato->del=1;
 }
 
 int recibir2(void *ap) {
@@ -72,6 +73,7 @@ int recibir2(void *ap) {
     fscanf(fso, "%i", &dato->estatura);
     fscanf(fso, "%f", &dato->peso);
     fscanf(fso, "%s", dato->sexo);
+	dato->del=1;
 
 }
 
@@ -218,12 +220,19 @@ int main() {
         printf("\n   no hay fuente inicial  \n"); //Si no existe lo crea(en el caso de que existiera lo sobreescribe)
     hash_node_t *hsh;
     hsh = hash_create();
-    for (i = 0; i < 10000000; i++) {
+    for (i = 0; i < 1000; i++) {
         recibir2(animal);
         fseek(f1, 0, SEEK_END); //Se lleva el puntero del archivo al final
         pos = ftell(f1);
         int npos = pos / sizeof(struct dogType);
         sprintf(nomarch, "Historia%d", pos);
+	if (0 >= (fwrite(animal, sizeof (*animal), 1, f1))) //Escritura en archivo
+                    printf("\n   Registro no ingresado  \n");
+                else {
+                    //printf("\n   Registro ingresado, %i \n", npos);
+                    hash_add(hsh, animal, pos, nomarch);
+                    creg = creg + 1;
+                }
     }
     do {
         menu();
@@ -259,44 +268,40 @@ int main() {
                 if (aux == 0) {
                     system("clear");
                     printf("\n %i   Registro vacio o inexistente\n", aux);
-                    aguante();
-                    system("clear");
                 } else {
                     printf("\n   Registro existente\n");
                     imprimir(animal);
                     sprintf(nomarch, "gedit Historia%d", i);
                     //p se extrae del guardado en
                     system(nomarch);
+                }
                     aguante();
                     system("clear");
-                }
                 break;
             case 3: //borrar
-                //se busca cambiar el ultimo elemento al lugar del elemento a sobreescribir eliminando a su vezlos datos (duplicados) del ultimo registro y realizar los respectivos cambios en la tabla hash
-                // se puede sobreescribir corriendo el cursor ala posicion a sobreescribir?¡como se eliminaria el ultimo registro
-                // la alternativa aparentemente demorada seria tener un registro de los archivo que deben ser borrados y pasar a un archivo copia que luego es renombrado
                 printf("Hay %d registros\n", creg);
                 printf("\n   Ingrese numero de registro a borrar:  \n");
                 scanf("%d", &his);
                 i = his * sizeof(struct dogType);
                 fseek(f1, 0, SEEK_END);
-                int fpos = ftell(f1)
+                int fpos = ftell(f1);
                 creg = creg - 1;
 		if (i < fpos) {
-			fseek(*data,i,SEEK_SET);
+			fseek(f1,i,SEEK_SET);
 			fread(animal,sizeof(struct dogType),1,f1);
-			animal -> boolean = 0;
+			animal -> del= 0;
 			fseek(f1,i,SEEK_SET);
 			fwrite(animal,sizeof(struct dogType),1,f1);
 			FILE *ftemp;
 			ftemp = fopen("temporal.tmp","wb");
 			rewind(f1);
 			while(fread(animal,sizeof(struct dogType),1,f1))
-				if(animal -> boolean == 1)
+				if(animal -> del == 1)
 					fwrite(animal,sizeof(struct dogType),1,ftemp);
 			fclose(ftemp);
 			fclose(f1);
 
+			printf("Zona critica\n");
 			rename("dataDogs.dat", "dataDogs.old");
 			rename("temporal.tmp", "dataDogs.dat");
 			remove("dataDogs.old");
@@ -330,14 +335,13 @@ int main() {
         }
 
     } while (opc != 5);
-    system("rm dataDogs.dat");
-    int i;
     for (i = 0; i < TAMHASH; i++) {
         free(hsh[i].datos);
     }
     free(hsh);
     free(animal); //Se libera el espacio antes reservado con malloc
     fclose(f1);
+    system("rm dataDogs.dat");
     fclose(fso); //Se cierra el archivo
     return 0;
 }
