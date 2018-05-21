@@ -29,7 +29,13 @@ int menu() {
     printf("\n\n   Introduzca opción (1-5): ");
 
 }
-
+int aguante() {
+    int ch;
+    //while ((ch = getchar()) != '\n' && ch != EOF);
+    printf("Presione cualquier tecla... \n");
+    getchar();
+	system("clear");
+}
 int main(){
 	int clientfd,r;
 	char msg[32];
@@ -61,6 +67,7 @@ int main(){
 				bzero(msg, 32);
 				r=recv(clientfd,msg,MAXLEN,0);
 				printf("%s %d\n", msg,r);
+				aguante();
 			}while( r >0);
 			if(r==-1)
 			{
