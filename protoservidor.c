@@ -302,6 +302,8 @@ int main(int argc, char **argv){
 		hilo_datos[i].p = i+1;//p<-permutaciones es igual a el numero i=i=1=dato+1
 		hilo_datos[i].CS=conexion_servidor;
 	}
+	listen(conexion_servidor, NUM_HILOS); //Estamos a la escucha
+	printf("A la escucha en el puerto %d\n", ntohs(servidor.sin_port));
 	/*se lanzan los hilos*/
 	for(i=0; i<NUM_HILOS; i++){//crea y ejecuta los hilos
 		error=pthread_create(&idhilo[i], NULL, (void *)proceso, (void *)(&hilo_datos[i]));
