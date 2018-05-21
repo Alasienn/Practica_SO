@@ -53,19 +53,15 @@ int main(){
 		}
 		else
 		{
-			
-        		menu();
-			fgets(msg, 32, stdin);
-			send(clientfd, msg, 32, 0); //envio
-			bzero(msg, 32);
-			r=recv(clientfd,msg,MAXLEN,0);
-			while( (recv(clientfd,msg,MAXLEN,0)) >0)
+			do
 			{
-				bzero(msg, 32);
+        		menu();
 				fgets(msg, 32, stdin);
 				send(clientfd, msg, 32, 0); //envio
 				bzero(msg, 32);
-			}
+				r=recv(clientfd,msg,MAXLEN,0);
+				printf("%s %d\n", msg,r);
+			}while( r >0);
 			if(r==-1)
 			{
 				perror("error en recv\n");
