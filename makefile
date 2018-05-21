@@ -1,16 +1,16 @@
-ejecutarS:exeS
+ejecutar:exe
 	reset
-	./exeS
+	./exe
 
-exeS:p2-dogServer.c
-	gcc -o exe p2-dogServer.c -lpthread
+exe: p2-dogServer.c
+	gcc p2-dogServer.c -o exe -lpthread
 
 ejecutarC:exeC
 	reset
 	./exeC
 
-exeC:p2-dogClient.c
-	gcc -o exe p2-dogClient.c -lpthread
+exeC: p2-dogClient.c
+	gcc p2-dogClient.c -o exeC -lpthread
 
 clear:
-	rm -f exe*
+	rm -f exe
