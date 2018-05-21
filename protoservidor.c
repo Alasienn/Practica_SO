@@ -196,22 +196,26 @@ inline static void hash_add(hash_node_t *hash, void *ap, int valor, char *x) {
 
 struct datos_tipo{
 	int dato;
-	int p;
+	hash_node_t *hsh;
 	int CS;
+	struct dogType *ap;
 }
 
 *proceso(void *datos)
 {
 	pthread_mutex_lock(&mutexG);//se desbloquea el mutex	
 	struct datos_tipo *datos_proceso;
+	struct dogType *animal;
 	datos_proceso = (struct datos_tipo *) datos;
     socklen_t longc; 
-	int a, i, j, p,conexion_cliente;
+	int a, i, r, pos, p,opc,conexion_cliente;
+	hash_node_t *hsh;
+	hsh= datos_proceso->hsh;
+	animal=datos_proceso->ap;
     //Declaramos una variable que contendrá los mensajes que recibamos
-    char buffer[32];
+    char buffer[32],msg[32];
 	struct sockaddr_in cliente;
 	a = datos_proceso->dato;
-	p = datos_proceso->p;
 /*zona critica */
 	longc = sizeof (cliente); //Asignamos el tamaño de la estructura a esta variable
     conexion_cliente = accept(datos_proceso->CS, (struct sockaddr *) &cliente, &longc); //Esperamos una conexion
@@ -221,25 +225,119 @@ struct datos_tipo{
         exit(1);
     }
     printf("Conectando con %s:%d\n", inet_ntoa(cliente.sin_addr), htons(cliente.sin_port));
-    if (recv(conexion_cliente, buffer, 100, 0) < 0) { 
-	//Comenzamos a recibir datos del cliente
-        //Si recv() recibe 0 el cliente ha cerrado la conexion. Si es menor que 0 ha habido algún error.
-        printf("Error al recibir los datos\n");
-        close(datos_proceso->CS);
-        exit(1);
-    } else {
+	do {
+        if (recv(conexion_cliente, buffer, 100, 0) < 0) { 
+			//Comenzamos a recibir datos del cliente
+		    //Si recv() recibe 0 el cliente ha cerrado la conexion. Si es menor que 0 ha habido algún error.
+		    printf("Error al recibir los datos\n");
+		    close(datos_proceso->CS);
+		    exit(1);
+    	} else {
         printf("%s\n", buffer);
-        bzero((char *) &buffer, sizeof (buffer));
-        send(conexion_cliente, "Recibido\n", 32, 0);
+        //bzero((char *) &buffer, sizeof (buffer));
+        //send(conexion_cliente, "Recibido\n", 32, 0);
+        //int i;
+		opc=atoi(buffer);
+        switch (opc) {
+            case 1:
+                recibir(animal);
+                fseek(f1, 0, SEEK_END); //Se lleva el puntero del archivo al final
+                pos = ftell(f1);
+                int npos = pos / (sizeof(struct dogType));
+                sprintf(msg, "Historia%d", pos);
+                if (0 >= (fwrite(animal, sizeof (*animal), 1, f1))) //Escritura en archivo
+                    printf("\n   Registro no ingresado  \n");
+                else {
+                    printf("\n   Registro ingresado, %i \n", npos);
+                    hash_add(hsh, animal, pos, msg);
+                    creg = creg + 1;
+                }
+                break;
+
+            case 2: //system("sudo gedit historia");
+                printf("Hay %d registros\n", creg);
+                printf("\n   Ingrese numero de registro a ver:  \n");
+                scanf("%d", &r);
+                i = r * sizeof(struct dogType);
+                fseek(f1, i, SEEK_SET);
+                r = fread(animal, sizeof (*animal), 1, f1);
+                if (r== 0) {
+                    system("clear");
+                    printf("\n %i   Registro vacio o inexistente\n", r);
+                } else {
+                    printf("\n   Registro existente\n");
+                    imprimir(animal);
+                    sprintf(msg, "gedit Historia%d", i);
+                    //p se extrae del guardado en
+                    system(msg);
+                }
+                break;
+            case 3: //borrar
+                printf("Hay %d registros\n", creg);
+                printf("\n   Ingrese numero de registro a borrar:  \n");
+                scanf("%d", &r);
+                i = r * sizeof(struct dogType);
+                fseek(f1, 0, SEEK_END);
+                int fpos = ftell(f1);
+				if (i < fpos) {
+					fseek(f1,i,SEEK_SET);
+					fread(animal,sizeof(struct dogType),1,f1);
+					animal -> del= 0;
+					fseek(f1,i,SEEK_SET);
+					fwrite(animal,sizeof(struct dogType),1,f1);
+					FILE *ftemp;
+					ftemp = fopen("temporal.tmp","wb");
+					rewind(f1);
+					while(fread(animal,sizeof(struct dogType),1,f1))
+						if(animal -> del == 1)
+							fwrite(animal,sizeof(struct dogType),1,ftemp);
+					fclose(ftemp);
+					fclose(f1);
+
+					printf("Zona critica\n");
+					rename("dataDogs.dat", "dataDogs.old");
+					rename("temporal.tmp", "dataDogs.dat");
+					remove("dataDogs.old");
+					f1 = fopen("dataDogs.dat","r+b");
+					printf("Eliminación Correcta\n");
+                	creg = creg - 1;
+				            }
+				else {//fuera del documento
+				                printf("\n   Registro no existente\n");
+				            }
+                break;
+            case 4: //buscar
+                printf("\n  Ingrese el nombre completo a buscar\n");
+				int y;
+				for (y = 0; y < 32; y++) {
+					msg[y] = ' ';
+				}
+                scanf("%s", &msg[32]);
+                int ind = hash_key(msg);
+                if (hsh[ind].num_datos > 0) {
+                    printf("\n Registro(s) Encontrado(s) \n");
+                    for (i = 0; i < hsh[ind].num_datos; i++) {
+                        int ret = hsh[ind].datos[i].val;
+                        printf("%lu \n", ret / sizeof (struct dogType));
+                    }
+                } else {
+                    printf("\n Registros  no encontrados \n");
+                }
+
+                //imprimir(animal);//esto mostraria el ultimo valor guardado en animal
+                break;
+            default:break;
+        }
+
     }
-	
+	}while (opc != 5);
 /* fin zona */
 	pthread_mutex_unlock(&mutexG);//se desbloquea el mutex
 }
 
 int main(int argc, char **argv){
-	int error, i, opc, aux, pos, his;
-    char nomarch[32], find[32];
+	int error, i, opc, pos, his;
+    char auxch[32];
 	char *valor_devuelto;
 /* Variables para hilos*/
 	struct datos_tipo hilo_datos[NUM_HILOS];
@@ -273,10 +371,6 @@ int main(int argc, char **argv){
     animal = malloc(sizeof (struct dogType)); //Se reserva un espacio en memoria de el tamaño de la estructura dogType
     f1 = fopen("dataDogs.dat", "a+b");
     fso = fopen("source", "r"); //Abre el fichero y guarda el puntero
-    int y;
-    for (y = 0; y < 32; y++) {
-        find[y] = ' ';
-    }
     if (!f1) //Revisa que el archivo se hubiera abierto(exista)
         f1 = fopen("dataDogs.dat", "wb"); //Si no existe lo crea(en el caso de que existier lo sobreescribe)
     if (!fso) //Revisa que el archivo se hubiera abierto(exista)
@@ -288,19 +382,20 @@ int main(int argc, char **argv){
         fseek(f1, 0, SEEK_END); //Se lleva el puntero del archivo al final
         pos = ftell(f1);
         int npos = pos / sizeof(struct dogType);
-        sprintf(nomarch, "Historia%d", pos);
+        sprintf(auxch, "Historia%d", pos);
 	if (0 >= (fwrite(animal, sizeof (*animal), 1, f1))) //Escritura en archivo
                     printf("\n   Registro no ingresado  \n");
                 else {
                     //printf("\n   Registro ingresado, %i \n", npos);
-                    hash_add(hsh, animal, pos, nomarch);
+                    hash_add(hsh, animal, pos, auxch);
                     creg = creg + 1;
                 }
     }
 	for(i=0; i<NUM_HILOS; i++){
 		hilo_datos[i].dato = i;
-		hilo_datos[i].p = i+1;//p<-permutaciones es igual a el numero i=i=1=dato+1
+		hilo_datos[i].hsh=hsh;
 		hilo_datos[i].CS=conexion_servidor;
+		hilo_datos[i].ap=animal;
 	}
 	listen(conexion_servidor, NUM_HILOS); //Estamos a la escucha
 	printf("A la escucha en el puerto %d\n", ntohs(servidor.sin_port));
