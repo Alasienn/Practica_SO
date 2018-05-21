@@ -38,7 +38,7 @@ int aguante() {
 }
 int main(){
 	int clientfd,r;
-	char msg[32];
+	char msg[32],auxch[32];
 	struct sockaddr_in client;
 	socklen_t tama=sizeof(struct sockaddr);
 	clientfd=socket(AF_INET,SOCK_STREAM,0);
@@ -64,11 +64,45 @@ int main(){
         		menu();
 				fgets(msg, 32, stdin);
 				send(clientfd, msg, 32, 0); //envio
-				bzero(msg, 32);
-				r=recv(clientfd,msg,MAXLEN,0);
-				printf("%s %d\n", msg,r);
+				int opc=atoi(msg);
+				switch (opc) {
+				    case 1:
+						
+					break;
+				    case 2:
+						
+					break;
+				    case 3:
+						
+					break;
+				    case 4:
+						r=recv(clientfd,msg,MAXLEN,0);
+						if(r==-1)
+						{
+							perror("error en recv\n");
+						}
+						else{
+							printf("fin %s\n", msg);
+							fgets(msg, 32, stdin);
+							send(clientfd, msg, 32, 0); //envio
+							bzero(msg, 32);
+							r=recv(clientfd,msg,MAXLEN,0);
+							if(r==-1)
+							{
+								perror("error en recv\n");
+							}
+							else{
+								printf("fin %s\n", msg);
+								fgets(msg, 32, stdin);
+								send(clientfd, msg, 32, 0); //envio
+							}
+						}	
+					break;
+            		default:break;
+					
+				}
 				aguante();
-			}while( r >0);
+			}while( atoi(msg)!=5);
 			if(r==-1)
 			{
 				perror("error en recv\n");
