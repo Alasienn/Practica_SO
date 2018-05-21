@@ -245,69 +245,99 @@ struct datos_tipo{
                 pos = ftell(f1);
                 int npos = pos / (sizeof(struct dogType));
                 sprintf(msg, "Historia%d", pos);
+		send(conexion_cliente, buffer, 32, 0);
                 if (0 >= (fwrite(animal, sizeof (*animal), 1, f1))) //Escritura en archivo
-                    printf("\n   Registro no ingresado  \n");
+                    sprintf(buffer,"\n   Registro no ingresado  \n");
+		    send(conexion_cliente, buffer, 32, 0);
                 else {
-                    printf("\n   Registro ingresado, %i \n", npos);
+                    sprintf(buffer,"\n   Registro ingresado, %i \n", npos);
+		    send(conexion_cliente, buffer, 32, 0);
                     hash_add(hsh, animal, pos, msg);
                     creg = creg + 1;
                 }
                 break;
 
             case 2: //system("sudo gedit historia");
-                printf("Hay %d registros\n", creg);
-                printf("\n   Ingrese numero de registro a ver:  \n");
-                scanf("%d", &r);
-                i = r * sizeof(struct dogType);
-                fseek(f1, i, SEEK_SET);
-                r = fread(animal, sizeof (*animal), 1, f1);
-                if (r== 0) {
-                    system("clear");
-                    printf("\n %i   Registro vacio o inexistente\n", r);
-                } else {
-                    printf("\n   Registro existente\n");
-                    imprimir(animal);
-                    sprintf(msg, "gedit Historia%d", i);
-                    //p se extrae del guardado en
-                    system(msg);
-                }
+                sprintf(buffer,"Hay %d registros\n", creg);
+		send(conexion_cliente, buffer, 32, 0);
+                sprintf(buffer,"\n   Ingrese numero de registro a ver:  \n");
+		send(conexion_cliente, buffer, 32, 0);
+		if (recv(conexion_cliente, buffer, 100, 0) < 0) {
+			//Comenzamos a recibir datos del cliente
+		    	//Si recv() recibe 0 el cliente ha cerrado la conexion. Si es menor que 0 ha habido algún error.
+		    	printf("Error al recibir los datos\n");
+			send(conexion_cliente, buffer, 32, 0);
+		    	close(datos_proceso->CS);
+		    	exit(1);
+		}
+		else {
+        		r=atoi(buffer);
+		        i = r * sizeof(struct dogType);
+		        fseek(f1, i, SEEK_SET);
+		        r = fread(animal, sizeof (*animal), 1, f1);
+		        if (r== 0) {
+		            system("clear");
+		            sprintf(buffer,"\n %i   Registro vacio o inexistente\n", r);
+			    send(conexion_cliente, buffer, 32, 0);
+		        } else {
+		            sprintf(buffer,"\n   Registro existente\n");
+			    send(conexion_cliente, buffer, 32, 0);
+		            imprimir(animal);
+		            sprintf(msg, "gedit Historia%d", i);
+		            //p se extrae del guardado en
+		            system(msg);
+		        }
+		}
                 break;
             case 3: //borrar
-                printf("Hay %d registros\n", creg);
-                printf("\n   Ingrese numero de registro a borrar:  \n");
-                scanf("%d", &r);
-                i = r * sizeof(struct dogType);
-                fseek(f1, 0, SEEK_END);
-                int fpos = ftell(f1);
-				if (i < fpos) {
-					fseek(f1,i,SEEK_SET);
-					fread(animal,sizeof(struct dogType),1,f1);
-					animal -> del= 0;
-					fseek(f1,i,SEEK_SET);
-					fwrite(animal,sizeof(struct dogType),1,f1);
-					FILE *ftemp;
-					ftemp = fopen("temporal.tmp","wb");
-					rewind(f1);
-					while(fread(animal,sizeof(struct dogType),1,f1))
-						if(animal -> del == 1)
-							fwrite(animal,sizeof(struct dogType),1,ftemp);
-					fclose(ftemp);
-					fclose(f1);
+		sprintf(buffer, "Hay %d registros\n", creg);
+		send(conexion_cliente, buffer, 32, 0);
+		sprintf(buffer, "\n   Ingrese numero de registro a borrar:  \n");
+		send(conexion_cliente, buffer, 32, 0);
+		if (recv(conexion_cliente, buffer, 100, 0) < 0) {
+			//Comenzamos a recibir datos del cliente
+		    	//Si recv() recibe 0 el cliente ha cerrado la conexion. Si es menor que 0 ha habido algún error.
+		    	printf("Error al recibir los datos\n");
+		    	close(datos_proceso->CS);
+		    	exit(1);
+		}
+		else {
+        		r=atoi(buffer);
+			i = r * sizeof(struct dogType);
+		        fseek(f1, 0, SEEK_END);
+		        int fpos = ftell(f1);
+			if (i < fpos){
+				fseek(f1,i,SEEK_SET);
+				fread(animal,sizeof(struct dogType),1,f1);
+				animal -> del= 0;
+				fseek(f1,i,SEEK_SET);
+				fwrite(animal,sizeof(struct dogType),1,f1);
+				FILE *ftemp;
+				ftemp = fopen("temporal.tmp","wb");
+				rewind(f1);
+				while(fread(animal,sizeof(struct dogType),1,f1))
+				if(animal -> del == 1)
+					fwrite(animal,sizeof(struct dogType),1,ftemp);
+				fclose(ftemp);
+				fclose(f1);
 
-					printf("Zona critica\n");
-					rename("dataDogs.dat", "dataDogs.old");
-					rename("temporal.tmp", "dataDogs.dat");
-					remove("dataDogs.old");
-					f1 = fopen("dataDogs.dat","r+b");
-					printf("Eliminación Correcta\n");
-                	creg = creg - 1;
-				            }
-				else {//fuera del documento
-				                printf("\n   Registro no existente\n");
-				            }
+				rename("dataDogs.dat", "dataDogs.old");
+				rename("temporal.tmp", "dataDogs.dat");
+				remove("dataDogs.old");
+				f1 = fopen("dataDogs.dat","r+b");
+				sprintf(buffer, "Eliminación Exitosa\n");
+				send(conexion_cliente, buffer, 32, 0);
+                		creg = creg - 1;
+			}
+			else {//fuera del documento
+				sprintf(buffer, "\n   Registro no existente\n");
+				send(conexion_cliente, buffer, 32, 0);
+			}
+		}
                 break;
             case 4: //buscar
-                printf("\n  Ingrese el nombre completo a buscar\n");
+                sprintf(buffer,"\n  Ingrese el nombre completo a buscar\n");
+		send(conexion_cliente, buffer, 32, 0);
 				int y;
 				for (y = 0; y < 32; y++) {
 					msg[y] = ' ';
@@ -315,13 +345,16 @@ struct datos_tipo{
                 scanf("%s", &msg[32]);
                 int ind = hash_key(msg);
                 if (hsh[ind].num_datos > 0) {
-                    printf("\n Registro(s) Encontrado(s) \n");
+                    sprintf(buffer,"\n Registro(s) Encontrado(s) \n");
+		    send(conexion_cliente, buffer, 32, 0);
                     for (i = 0; i < hsh[ind].num_datos; i++) {
                         int ret = hsh[ind].datos[i].val;
-                        printf("%lu \n", ret / sizeof (struct dogType));
+                        sprintf(buffer,"%lu \n", ret / sizeof (struct dogType));
+			send(conexion_cliente, buffer, 32, 0);
                     }
                 } else {
-                    printf("\n Registros  no encontrados \n");
+                    sprintf(buffer,"\n Registros  no encontrados \n");
+		    send(conexion_cliente, buffer, 32, 0);
                 }
 
                 //imprimir(animal);//esto mostraria el ultimo valor guardado en animal
@@ -424,3 +457,4 @@ int main(int argc, char **argv){
     fclose(fso); //Se cierra el archivo
 	return 0;
 }
+		send(conexion_cliente, buffer, 32, 0);

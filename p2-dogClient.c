@@ -70,10 +70,39 @@ int main(){
 						
 					break;
 				    case 2:
-						
+					r=recv(clientfd,msg,MAXLEN,0);
+					if(r==-1)perror("error en recv\n");
+					else{
+						printf("%s", msg);
+						r=recv(clientfd,msg,MAXLEN,0);
+						if(r==-1)perror("error en recv\n");
+						else{
+							printf("%s", msg);
+							fgets(msg, 32, stdin);
+							send(clientfd, msg, 32, 0); //envio
+							r=recv(clientfd,msg,MAXLEN,0);
+							if(r==-1)perror("error en recv\n");
+							else printf("%s", msg);
+						}
+					}	
+					break;	
 					break;
 				    case 3:
-						
+					r=recv(clientfd,msg,MAXLEN,0);
+					if(r==-1)perror("error en recv\n");
+					else{
+						printf("%s", msg);
+						r=recv(clientfd,msg,MAXLEN,0);
+						if(r==-1)perror("error en recv\n");
+						else{
+							printf("%s", msg);
+							fgets(msg, 32, stdin);
+							send(clientfd, msg, 32, 0); //envio
+							r=recv(clientfd,msg,MAXLEN,0);
+							if(r==-1)perror("error en recv\n");
+							else printf("%s", msg);
+						}
+					}	
 					break;
 				    case 4:
 						r=recv(clientfd,msg,MAXLEN,0);

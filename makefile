@@ -1,4 +1,4 @@
-ejecutar:exe
+ejecutar:exe 3535
 	reset
 	./exe
 
@@ -8,7 +8,7 @@ exe: p2-dogServer.c
 ejecutarC:exeC
 	reset
 	./exeC
-
+	
 exeC: p2-dogClient.c
 	gcc p2-dogClient.c -o exeC -lpthread
 
