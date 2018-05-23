@@ -299,19 +299,19 @@ struct datos_tipo{
 				        sprintf(buffer,"\n   Registro existente\n");
 						send(conexion_cliente, buffer, 32, 0);
 				        //imprimir(animal);
-					sprintf(buffer,"Nombre: %s\n", dato->nombre);
+					sprintf(buffer,"Nombre: %s\n", animal->nombre);
 						send(conexion_cliente, buffer, 32, 0);
-					    sprintf(buffer,"Tipo: %s\n", dato->tipo);
+					    sprintf(buffer,"Tipo: %s\n", animal->tipo);
 						send(conexion_cliente, buffer, 32, 0);
-					    sprintf(buffer,"Edad: %i\n", dato->edad);
+					    sprintf(buffer,"Edad: %i\n", animal->edad);
 						send(conexion_cliente, buffer, 32, 0);
-					    sprintf(buffer,"Raza: %s\n", dato->raza);
+					    sprintf(buffer,"Raza: %s\n", animal->raza);
 						send(conexion_cliente, buffer, 32, 0);
-					    sprintf(buffer,"Estatura: %i\n", dato->estatura);
+					    sprintf(buffer,"Estatura: %i\n", animal->estatura);
 						send(conexion_cliente, buffer, 32, 0);
-					    sprintf(buffer,"Peso: %f\n", dato->peso);
+					    sprintf(buffer,"Peso: %f\n", animal->peso);
 						send(conexion_cliente, buffer, 32, 0);
-					    sprintf(buffer,"Sexo: %s\n", dato->sexo);
+					    sprintf(buffer,"Sexo: %s\n", animal->sexo);
 						send(conexion_cliente, buffer, 32, 0);
 				        sprintf(msg, "gedit Historia%d", i);
 				        //p se extrae del guardado en
@@ -353,8 +353,8 @@ struct datos_tipo{
 						ftemp = fopen("temporal.tmp","wb");
 						rewind(f1);
 						while(fread(animal,sizeof(struct dogType),1,f1))
-							if(animal -> del == 1)
-								fwrite(animal,sizeof(struct dogType),1,ftemp);
+							{if(animal -> del == 1)
+								{fwrite(animal,sizeof(struct dogType),1,ftemp);}}
 						fclose(ftemp);
 						fclose(f1);
 
@@ -475,8 +475,9 @@ int main(int argc, char **argv){
         printf("\n   no hay fuente inicial  \n"); //Si no existe lo crea(en el caso de que existiera lo sobreescribe)
     hash_node_t *hsh;
     hsh = hash_create();
-    for (i = 0; i < 1000; i++) {//insecion prev
+    for (i = 0; i < 10000000; i++) {//insecion prev
         recibir2(animal);
+	animal->del=1;
         fseek(f1, 0, SEEK_END); //Se lleva el puntero del archivo al final
         pos = ftell(f1);
         int npos = pos / sizeof(struct dogType);
