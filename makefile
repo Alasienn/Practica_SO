@@ -13,4 +13,4 @@ exeC: p2-dogClient.c
 	gcc p2-dogClient.c -o exeC -lpthread
 
 clear:
-	rm -f exe
+	rm -f exe*
