@@ -206,7 +206,7 @@ struct datos_tipo{
 
 *proceso(void *datos)
 {
-	pthread_mutex_lock(&mutexG);//se desbloquea el mutex	
+	//pthread_mutex_lock(&mutexG);//se desbloquea el mutex	
 	struct datos_tipo *datos_proceso;
 	struct dogType *animal;
 	datos_proceso = (struct datos_tipo *) datos;
@@ -241,7 +241,7 @@ struct datos_tipo{
 		    close(datos_proceso->CS);
 		    exit(1);
     	}else {
-        printf("%s\n", buffer);
+        //printf("%s\n", buffer);
         //bzero((char *) &buffer, sizeof (buffer));
         //send(conexion_cliente, "Recibido\n", 32, 0);
         //int i;
