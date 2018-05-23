@@ -1,6 +1,6 @@
-ejecutar:exe 3535
+ejecutar:exe
 	reset
-	./exe
+	./exe 3535
 
 exe: p2-dogServer.c
 	gcc p2-dogServer.c -o exe -lpthread

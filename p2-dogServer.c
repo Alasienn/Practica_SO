@@ -251,7 +251,8 @@ struct datos_tipo{
                 recibir(animal);
                 fseek(f1, 0, SEEK_END); //Se lleva el puntero del archivo al final
                 pos = ftell(f1);
-                int npos = pos / (sizeof(struct dogType));
+                int npos;
+		npos = pos / (sizeof(struct dogType));
                 sprintf(msg, "Historia%d", pos);
                 if (0 >= (fwrite(animal, sizeof (*animal), 1, f1))){ //Escritura en archivo
                     sprintf(buffer,"\n   Registro no ingresado  \n");
