@@ -106,24 +106,28 @@ int main(){
 					break;
 				    case 4:
 						r=recv(clientfd,msg,MAXLEN,0);
-						if(r==-1)
-						{
-							perror("error en recv\n");
-						}
+						if(r==-1)perror("error en recv\n");
 						else{
-							printf("fin %s\n", msg);
+							printf("%s", msg);
 							fgets(msg, 32, stdin);
 							send(clientfd, msg, 32, 0); //envio
 							bzero(msg, 32);
 							r=recv(clientfd,msg,MAXLEN,0);
-							if(r==-1)
-							{
-								perror("error en recv\n");
-							}
+							if(r==-1)perror("error en recv\n");
 							else{
-								printf("fin %s\n", msg);
-								fgets(msg, 32, stdin);
-								send(clientfd, msg, 32, 0); //envio
+								printf("%s", msg);
+								r=recv(clientfd,msg,MAXLEN,0);
+								if(r==-1)perror("error en recv\n");
+								else{
+									r=atoi(msg);
+									for (i = 0; i < r; i++) {
+										r=recv(clientfd,msg,MAXLEN,0);
+										if(r==-1)perror("error en recv\n");
+										else{
+											printf("%s", msg);
+										}
+								    }
+								}
 							}
 						}	
 					break;
