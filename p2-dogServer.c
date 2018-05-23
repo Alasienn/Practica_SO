@@ -121,7 +121,6 @@ typedef struct {
 inline static int hash_key(char *k) {
     int sum = 0;
     int i;
-    //se cambio el condicional ojo con eso
     for (i = 0; k[i] != 0; i++) {
         if (k[i] > 64 && k[i] < 91) {
             k[i] = k[i] + 32;
@@ -153,7 +152,6 @@ inline static void hash_add(hash_node_t *hash, void *ap, int valor, char *x) {
     dato = ap;
     char *p = dato->nombre;
     ind = hash_key(p);
-    //printf("%d \n",ind);
     // comprobamos si existe
     for (i = 0; i < hash[ind].num_datos; i++) {
         if (hash[ind].datos[i].k[0] == p[0] &&
@@ -186,7 +184,6 @@ inline static void hash_add(hash_node_t *hash, void *ap, int valor, char *x) {
         hash[ind].datos[i].k[7] = p[7];
 
         hash[ind].datos[i].val = valor;
-        //memcpy(hash[ind].datos[i].nomarch, x, sizeof (&x));
         hash[ind].num_datos++;
     } else {
         // lo hemos encontrado.
