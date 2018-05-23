@@ -212,7 +212,12 @@ struct datos_tipo{
 	hash_node_t *hsh;
 	hsh= datos_proceso->hsh;
 	animal=datos_proceso->ap;
-    //Declaramos una variable que contendrá los mensajes que recibamos
+	time_t tiempo;
+	struct tm *tlocal;
+	char output[128];
+	flog = fopen("serverDogs.log", "a+");
+	if (flog==NULL) {fputs ("File error",stderr); exit (1);}
+    //Declaramos unas variables que contendrán los mensajes que recibamos
     char buffer[32],msg[32];
 	struct sockaddr_in cliente;
 	a = datos_proceso->dato;
@@ -253,7 +258,12 @@ struct datos_tipo{
 		    		send(conexion_cliente, buffer, 32, 0);
                     hash_add(hsh, animal, pos, msg);
                     creg = creg + 1;
-                }
+                }//registro en el log
+				tiempo = time(0);
+        		tlocal = localtime(&tiempo);
+				strftime(output,128,"%Y%m%d%H%M%S",tlocal);
+				sprintf(output,"%s %s:%d inserción %d\n",output, inet_ntoa(cliente.sin_addr), htons(cliente.sin_port),npos);
+				fputs( output, flog );
                 break;
 
 			case 2: //system("sudo gedit historia");
@@ -270,8 +280,8 @@ struct datos_tipo{
 					close(datos_proceso->CS);
 					exit(1);
 				}else {
-		    		r=atoi(buffer);
-				    i = r * sizeof(struct dogType);
+		    		i=atoi(buffer);
+				    i = i * sizeof(struct dogType);
 				    fseek(f1, i, SEEK_SET);
 				    r = fread(animal, sizeof (*animal), 1, f1);
 				    if (r== 0) {
@@ -288,7 +298,12 @@ struct datos_tipo{
 				        //p se extrae del guardado en
 				        system(msg);
 				    }
-			}
+				}//registro en el log
+				tiempo = time(0);
+        		tlocal = localtime(&tiempo);
+				strftime(output,128,"%Y%m%d%H%M%S",tlocal);
+				sprintf(output,"%s %s:%d lectura %d\n",output, inet_ntoa(cliente.sin_addr), htons(cliente.sin_port),i);
+				fputs( output, flog );
                 break;
             case 3: //borrar
 				bzero((char *) &buffer, sizeof (buffer));
@@ -304,8 +319,8 @@ struct datos_tipo{
 					close(datos_proceso->CS);
 					exit(1);
 				}else {
-					r=atoi(buffer);
-					i = r * sizeof(struct dogType);
+					i=atoi(buffer);
+					i = i * sizeof(struct dogType);
 					fseek(f1, 0, SEEK_END);
 					int fpos = ftell(f1);
 					if (i < fpos){
@@ -336,7 +351,12 @@ struct datos_tipo{
 						sprintf(buffer, "\n   Registro no existente\n");
 						send(conexion_cliente, buffer, 32, 0);
 					}
-				}
+				}//registro en el log
+				tiempo = time(0);
+        		tlocal = localtime(&tiempo);
+				strftime(output,128,"%Y%m%d%H%M%S",tlocal);
+				sprintf(output,"%s %s:%d borrado %d\n",output, inet_ntoa(cliente.sin_addr), htons(cliente.sin_port),i);
+				fputs( output, flog );
                 break;
             case 4: //buscar
 				bzero((char *) &buffer, sizeof (buffer));
@@ -374,7 +394,12 @@ struct datos_tipo{
 						send(conexion_cliente, buffer, 32, 0);
 						send(conexion_cliente, "0", 32, 0);
 		            }
-				}
+				}//registro en el log
+				tiempo = time(0);
+        		tlocal = localtime(&tiempo);
+				strftime(output,128,"%Y%m%d%H%M%S",tlocal);
+				sprintf(output,"%s %s:%d búsqueda %s\n",output, inet_ntoa(cliente.sin_addr), htons(cliente.sin_port),msg);
+				fputs( output, flog );
                 //imprimir(animal);//esto mostraria el ultimo valor guardado en animal
                 break;
             default:break;
@@ -382,6 +407,7 @@ struct datos_tipo{
 
     }
 	}while (opc != 5);
+	fclose(flog);
 /* fin zona */
 	pthread_mutex_unlock(&mutexG);//se desbloquea el mutex
 }
