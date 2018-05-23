@@ -16,10 +16,9 @@
 #define MAXLEN 32
 #define PORT 3535
 
-
-
 int menu() {
-    printf("\n.:*************:.");
+    printf("\n   ***************************************");
+    printf("\n.:*****************************************:.");
     printf("\n   1. Ingresar registro.");
     printf("\n   2. Ver registro.");
     printf("\n   3. Borrar Registro.");
@@ -27,120 +26,115 @@ int menu() {
     printf("\n   5. Salir.");
     printf("\n   ________________________");
     printf("\n\n   Introduzca opción (1-5): ");
+    printf("\n   ________________________");
 
 }
+
 int aguante() {
     int ch;
     //while ((ch = getchar()) != '\n' && ch != EOF);
     printf("Presione cualquier tecla... \n");
     getchar();
-	system("clear");
+    system("clear");
 }
-int main(){
-	int clientfd,r;
-	char msg[32],auxch[32];
-	struct sockaddr_in client;
-	socklen_t tama=sizeof(struct sockaddr);
-	clientfd=socket(AF_INET,SOCK_STREAM,0);
-	if(clientfd==-1)
-	{
-		perror("error en socket\n");
-	}
-	else
-	{
-		client.sin_family=AF_INET;
-		client.sin_port=htons(PORT);
-		client.sin_addr.s_addr=inet_addr("127.0.0.1");
-		bzero(client.sin_zero,8);
-		r=connect(clientfd,(struct sockaddr*)&client,tama);
-		if(r==-1)
-		{
-			perror("error en connect\n");
-		}
-		else
-		{
-			do
-			{
-        		menu();
-				fgets(msg, 32, stdin);
-				send(clientfd, msg, 32, 0); //envio
-				int opc=atoi(msg);
-				switch (opc) {
-				    case 1:
-						
-					break;
-				    case 2:
-					r=recv(clientfd,msg,MAXLEN,0);
-					if(r==-1)perror("error en recv\n");
-					else{
-						printf("%s", msg);
-						r=recv(clientfd,msg,MAXLEN,0);
-						if(r==-1)perror("error en recv\n");
-						else{
-							printf("%s", msg);
-							fgets(msg, 32, stdin);
-							send(clientfd, msg, 32, 0); //envio
-							r=recv(clientfd,msg,MAXLEN,0);
-							if(r==-1)perror("error en recv\n");
-							else printf("%s", msg);
-						}
-					}	
-					break;	
-					break;
-				    case 3:
-					r=recv(clientfd,msg,MAXLEN,0);
-					if(r==-1)perror("error en recv\n");
-					else{
-						printf("%s", msg);
-						r=recv(clientfd,msg,MAXLEN,0);
-						if(r==-1)perror("error en recv\n");
-						else{
-							printf("%s", msg);
-							fgets(msg, 32, stdin);
-							send(clientfd, msg, 32, 0); //envio
-							r=recv(clientfd,msg,MAXLEN,0);
-							if(r==-1)perror("error en recv\n");
-							else printf("%s", msg);
-						}
-					}	
-					break;
-				    case 4:
-						r=recv(clientfd,msg,MAXLEN,0);
-						if(r==-1)perror("error en recv\n");
-						else{
-							printf("%s", msg);
-							fgets(msg, 32, stdin);
-							send(clientfd, msg, 32, 0); //envio
-							bzero(msg, 32);
-							r=recv(clientfd,msg,MAXLEN,0);
-							if(r==-1)perror("error en recv\n");
-							else{
-								printf("%s", msg);
-								r=recv(clientfd,msg,MAXLEN,0);
-								if(r==-1)perror("error en recv\n");
-								else{
-									r=atoi(msg);
-									for (i = 0; i < r; i++) {
-										r=recv(clientfd,msg,MAXLEN,0);
-										if(r==-1)perror("error en recv\n");
-										else{
-											printf("%s", msg);
-										}
-								    }
-								}
-							}
-						}	
-					break;
-            		default:break;
-					
-				}
-				aguante();
-			}while( atoi(msg)!=5);
-			if(r==-1)
-			{
-				perror("error en recv\n");
-			}
-		}
-	}
-	close(clientfd);
+
+int main() {
+    int clientfd, r;
+    char msg[32], auxch[32];
+    struct sockaddr_in client;
+    socklen_t tama = sizeof (struct sockaddr);
+    clientfd = socket(AF_INET, SOCK_STREAM, 0);
+    if (clientfd == -1) {
+        perror("error en socket\n");
+    } else {
+        client.sin_family = AF_INET;
+        client.sin_port = htons(PORT);
+        client.sin_addr.s_addr = inet_addr("127.0.0.1");
+        bzero(client.sin_zero, 8);
+        r = connect(clientfd, (struct sockaddr*) &client, tama);
+        if (r == -1) {
+            perror("error en connect\n");
+        } else {
+            do {
+                menu();
+                fgets(msg, 32, stdin);
+                send(clientfd, msg, 32, 0); //envio
+                int opc = atoi(msg);
+                switch (opc) {
+                    case 1:
+
+                        break;
+                    case 2:
+                        r = recv(clientfd, msg, MAXLEN, 0);
+                        if (r == -1)perror("error en recv\n");
+                        else {
+                            printf("%s", msg);
+                            r = recv(clientfd, msg, MAXLEN, 0);
+                            if (r == -1)perror("error en recv\n");
+                            else {
+                                printf("%s", msg);
+                                fgets(msg, 32, stdin);
+                                send(clientfd, msg, 32, 0); //envio
+                                r = recv(clientfd, msg, MAXLEN, 0);
+                                if (r == -1)perror("error en recv\n");
+                                else printf("%s", msg);
+                            }
+                        }
+                        break;
+                        break;
+                    case 3:
+                        r = recv(clientfd, msg, MAXLEN, 0);
+                        if (r == -1)perror("error en recv\n");
+                        else {
+                            printf("%s", msg);
+                            r = recv(clientfd, msg, MAXLEN, 0);
+                            if (r == -1)perror("error en recv\n");
+                            else {
+                                printf("%s", msg);
+                                fgets(msg, 32, stdin);
+                                send(clientfd, msg, 32, 0); //envio
+                                r = recv(clientfd, msg, MAXLEN, 0);
+                                if (r == -1)perror("error en recv\n");
+                                else printf("%s", msg);
+                            }
+                        }
+                        break;
+                    case 4:
+                        r = recv(clientfd, msg, MAXLEN, 0);
+                        if (r == -1)perror("error en recv\n");
+                        else {
+                            printf("%s", msg);
+                            fgets(msg, 32, stdin);
+                            send(clientfd, msg, 32, 0); //envio
+                            bzero(msg, 32);
+                            r = recv(clientfd, msg, MAXLEN, 0);
+                            if (r == -1)perror("error en recv\n");
+                            else {
+                                printf("%s", msg);
+                                r = recv(clientfd, msg, MAXLEN, 0);
+                                if (r == -1)perror("error en recv\n");
+                                else {
+                                    r = atoi(msg);
+                                    for (i = 0; i < r; i++) {
+                                        r = recv(clientfd, msg, MAXLEN, 0);
+                                        if (r == -1)perror("error en recv\n");
+                                        else {
+                                            printf("%s", msg);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    default:break;
+
+                }
+                aguante();
+            } while (atoi(msg) != 5);
+            if (r == -1) {
+                perror("error en recv\n");
+            }
+        }
+    }
+    close(clientfd);
 }
