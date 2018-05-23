@@ -298,7 +298,21 @@ struct datos_tipo{
 						bzero((char *) &buffer, sizeof (buffer));
 				        sprintf(buffer,"\n   Registro existente\n");
 						send(conexion_cliente, buffer, 32, 0);
-				        imprimir(animal);
+				        //imprimir(animal);
+					sprintf(buffer,"Nombre: %s\n", dato->nombre);
+						send(conexion_cliente, buffer, 32, 0);
+					    sprintf(buffer,"Tipo: %s\n", dato->tipo);
+						send(conexion_cliente, buffer, 32, 0);
+					    sprintf(buffer,"Edad: %i\n", dato->edad);
+						send(conexion_cliente, buffer, 32, 0);
+					    sprintf(buffer,"Raza: %s\n", dato->raza);
+						send(conexion_cliente, buffer, 32, 0);
+					    sprintf(buffer,"Estatura: %i\n", dato->estatura);
+						send(conexion_cliente, buffer, 32, 0);
+					    sprintf(buffer,"Peso: %f\n", dato->peso);
+						send(conexion_cliente, buffer, 32, 0);
+					    sprintf(buffer,"Sexo: %s\n", dato->sexo);
+						send(conexion_cliente, buffer, 32, 0);
 				        sprintf(msg, "gedit Historia%d", i);
 				        //p se extrae del guardado en
 				        system(msg);
