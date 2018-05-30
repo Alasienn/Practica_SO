@@ -292,14 +292,18 @@ struct datos_tipo{
 				    if (r== 0) {
 				        //system("clear");
 						bzero((char *) &buffer, sizeof (buffer));
+						send(conexion_cliente, "0", 32, 0);
+						bzero((char *) &buffer, sizeof (buffer));
 				        sprintf(buffer,"\nRegistro vacio o inexistente\n");
 						send(conexion_cliente, buffer, 32, 0);
 				    }else {
 						bzero((char *) &buffer, sizeof (buffer));
-				        sprintf(buffer,"\n   Registro existente\n");
+						send(conexion_cliente, "1", 32, 0);
+						bzero((char *) &buffer, sizeof (buffer));
+				        sprintf(buffer,"\nRegistro existente\n");
 						send(conexion_cliente, buffer, 32, 0);
 				        //imprimir(animal);
-					sprintf(buffer,"Nombre: %s\n", animal->nombre);
+						sprintf(buffer,"Nombre: %s\n", animal->nombre);
 						send(conexion_cliente, buffer, 32, 0);
 					    sprintf(buffer,"Tipo: %s\n", animal->tipo);
 						send(conexion_cliente, buffer, 32, 0);
@@ -430,6 +434,7 @@ struct datos_tipo{
 	}while (opc != 5);
 	fclose(flog);
 /* fin zona */
+	printf("Desconectando con %s:%d\n", inet_ntoa(cliente.sin_addr), htons(cliente.sin_port));
 	pthread_mutex_unlock(&mutexG);//se desbloquea el mutex
 }
 
