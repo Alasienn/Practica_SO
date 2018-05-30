@@ -67,49 +67,81 @@ int main() {
                         r = recv(clientfd, msg, MAXLEN, 0);
                         if (r == -1)perror("error en recv\n");
                         else {
-                            printf("%s", msg);
+							printf("%s", msg);//sprintf(buffer,"Hay %d registros\n", creg);
                             bzero(msg, 32);
                             r = recv(clientfd, msg, MAXLEN, 0);
                             if (r == -1)perror("error en recv\n");
                             else {
-                                printf("%s", msg);
+								printf("%s", msg);//sprintf(buffer,"\nIngrese # registro a ver:\n");
                                 bzero(msg, 32);
                                 fgets(msg, 32, stdin);
                                 send(clientfd, msg, 32, 0); //envio
                                 r = recv(clientfd, msg, MAXLEN, 0);
                                 if (r == -1)perror("error en recv\n");
-                                else{ printf("%s", msg);
-				bzero(msg, 32);
-                            r = recv(clientfd, msg, MAXLEN, 0);
-                            if (r == -1)perror("error en recv\n");
-                            else {
-                                printf("%s", msg);
-                            bzero(msg, 32);
-                            r = recv(clientfd, msg, MAXLEN, 0);
-                            if (r == -1)perror("error en recv\n");
-                            else {
-                            bzero(msg, 32);
-                            r = recv(clientfd, msg, MAXLEN, 0);
-                            if (r == -1)perror("error en recv\n");
-                            else {
-                            bzero(msg, 32);
-                            r = recv(clientfd, msg, MAXLEN, 0);
-                            if (r == -1)perror("error en recv\n");
-                            else {
-                            bzero(msg, 32);
-                            r = recv(clientfd, msg, MAXLEN, 0);
-                            if (r == -1)perror("error en recv\n");
-                            else {
-                            bzero(msg, 32);
-                            r = recv(clientfd, msg, MAXLEN, 0);
-                            if (r == -1)perror("error en recv\n");
-                            else {
-                            bzero(msg, 32);
-                            r = recv(clientfd, msg, MAXLEN, 0);
-                            if (r == -1)perror("error en recv\n");
-                            else {}
-                            }}}}}}}}
-                        }
+                                else{
+									r=atoi(msg);
+									if (r== 0) {//condicional registro existente
+                                		bzero(msg, 32);
+                                		r = recv(clientfd, msg, MAXLEN, 0);
+										if (r == -1)perror("error en recv\n");
+				                    	else {
+											printf("%s", msg);//sprintf(buffer,"\nRegistro vacio o inexistente\n");
+										}
+									}
+									else {
+										bzero(msg, 32);
+                                		r = recv(clientfd, msg, MAXLEN, 0);
+										if (r ==-1)perror("error en recv\n");
+				                    	else {
+											printf("%s", msg);//sprintf(buffer,"\n   Registro existente\n");
+											bzero(msg, 32);
+								            r = recv(clientfd, msg, MAXLEN, 0);
+								            if (r == -1)perror("error en recv\n");
+								            else {
+								                printf("%s", msg);//sprintf(buffer,"Nombre
+										        bzero(msg, 32);
+										        r = recv(clientfd, msg, MAXLEN, 0);
+										        if (r == -1)perror("error en recv\n");
+										        else {
+								                	printf("%s", msg);//sprintf(buffer,"Tipo
+												    bzero(msg, 32);
+												    r = recv(clientfd, msg, MAXLEN, 0);
+												    if (r == -1)perror("error en recv\n");
+												    else {
+								                		printf("%s", msg);//sprintf(buffer,"Edad
+														bzero(msg, 32);
+														r = recv(clientfd, msg, MAXLEN, 0);
+														if (r == -1)perror("error en recv\n");
+														else {
+								                			printf("%s", msg);//sprintf(buffer,"Raza
+															bzero(msg, 32);
+															r = recv(clientfd, msg, MAXLEN, 0);
+															if (r == -1)perror("error en recv\n");
+															else {
+								                				printf("%s", msg);//sprintf(buffer,"Estatura
+																bzero(msg, 32);
+																r = recv(clientfd, msg, MAXLEN, 0);
+																if (r == -1)perror("error en recv\n");
+																else {
+								                					printf("%s", msg);//sprintf(buffer,"Peso
+																	bzero(msg, 32);
+																	r = recv(clientfd, msg, MAXLEN, 0);
+																	if (r == -1)perror("error en recv\n");
+						                							else {
+																		printf("%s", msg);//sprintf(buffer,"Sexo
+																		bzero(msg, 32);
+																	}
+		                        								}
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
                         break;
                     case 3:
                         bzero(msg, 32);
